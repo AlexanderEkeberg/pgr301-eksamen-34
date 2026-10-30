@@ -19,3 +19,18 @@ curl -F "image=@samples/sample_image.png" http://localhost:9999/api/analyze
 ```
 
 Dockerfilen bygger JAR-filen med Maven og JDK i første steg, og kopierer bare JAR-filen over til et lite JRE-image, slik at det endelige imaget blir mindre og uten build-verktøy.
+
+
+## Oppgave 1B – CI-pipeline
+
+Workflow: `.github/workflows/ci.yml`
+
+Grønn kjøring: https://github.com/AlexanderEkeberg/pgr301-eksamen-34/actions/runs/41057448896
+
+ECR-repoet ble opprettet manuelt med:
+```bash
+aws ecr create-repository --repository-name wishifai-34 --region eu-west-1
+```
+
+### Tagging-strategi
+Hvert image tagges med commit-SHA-en, slik at man alltid kan se nøyaktig hvilken versjon av koden som kjører, og enkelt rulle tilbake til en tidligere versjon.
