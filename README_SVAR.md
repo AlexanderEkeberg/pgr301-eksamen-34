@@ -34,3 +34,25 @@ aws ecr create-repository --repository-name wishifai-34 --region eu-west-1
 
 ### Tagging-strategi
 Hvert image tagges med commit-SHA-en, slik at man alltid kan se nøyaktig hvilken versjon av koden som kjører, og enkelt rulle tilbake til en tidligere versjon.
+
+
+
+## Oppgave 2A – ECS Express med Terraform
+
+Terraform-kode: `infra/`
+
+URL: https://wi-e93f0f7ffdc34ed1b0ae62a2d151e2cf.ecs.eu-west-1.on.aws
+
+Test:
+```bash
+curl -F "image=@samples/sample_image.png" https://wi-e93f0f7ffdc34ed1b0ae62a2d151e2cf.ecs.eu-west-1.on.aws/api/analyze
+```
+
+Tjenesten bruker de eksisterende execution og infrastructure-rollene, og task-rollen wishifai-task-role-34 gir appen tilgang til S3, Rekognition og Bedrock. S3_BUCKET settes automatisk fra bucket-ressursen.
+
+
+## Oppgave 2B – Remote state
+
+State-nøkkel: wishifai/34/terraform.tfstate i bucketen pgr301-terraform-state
+
+State lagres i S3 slik at pipelinen og andre utviklere bruker samme state.
