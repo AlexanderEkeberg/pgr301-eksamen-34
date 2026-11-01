@@ -56,3 +56,12 @@ Tjenesten bruker de eksisterende execution og infrastructure-rollene, og task-ro
 State-nøkkel: wishifai/34/terraform.tfstate i bucketen pgr301-terraform-state
 
 State lagres i S3 slik at pipelinen og andre utviklere bruker samme state.
+
+
+## Oppgave 2C – Terraform i pipeline
+
+Grønn kjøring: https://github.com/AlexanderEkeberg/pgr301-eksamen-34/actions/runs/41340040292
+
+Terraform kjører etter build fordi den trenger den nye image-taggen, og imaget må ligge i ECR før ECS kan starte det.
+
+Valgte å låse runner, Terraform og AWS-provideren slik at pipelinen gir samme resultat hver gang.
