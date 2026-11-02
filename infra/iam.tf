@@ -23,7 +23,7 @@ data "aws_iam_policy_document" "task_permissions" {
     actions   = ["bedrock:InvokeModel"]
     resources = ["*"]
   }
-  
+
   statement {
     actions   = ["cloudwatch:PutMetricData"]
     resources = ["*"]
