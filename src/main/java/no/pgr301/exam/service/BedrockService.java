@@ -1,6 +1,7 @@
 package no.pgr301.exam.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import no.pgr301.exam.metrics.WishifaiMetrics;
 import no.pgr301.exam.model.GiftAnalysis;
 import no.pgr301.exam.model.GiftSuggestion;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,11 +25,13 @@ public class BedrockService {
 
     private final BedrockRuntimeClient client;
     private final String modelId;
+    private final WishifaiMetrics metrics;
 
     public BedrockService(BedrockRuntimeClient client,
-                          @Value("${app.bedrock.model-id}") String modelId) {
+                          @Value("${app.bedrock.model-id}") String modelId, WishifaiMetrics metrics) {
         this.client = client;
         this.modelId = modelId;
+        this.metrics = metrics;
     }
 
     /**
@@ -86,13 +89,13 @@ public class BedrockService {
                 }
                 """.formatted(String.join(", ", labels));
 
-        ConverseResponse resp = client.converse(ConverseRequest.builder()
+        ConverseResponse resp = metrics.measureBedrock(() -> client.converse(ConverseRequest.builder()
                 .modelId(modelId)
                 .messages(Message.builder()
                         .role(ConversationRole.USER)
                         .content(ContentBlock.fromText(prompt))
                         .build())
-                .build());
+                .build()));
 
         String text = resp.output().message().content().get(0).text();
         return parseAnalysis(text);

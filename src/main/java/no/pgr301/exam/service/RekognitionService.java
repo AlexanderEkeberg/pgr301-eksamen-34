@@ -7,6 +7,7 @@ import software.amazon.awssdk.services.rekognition.model.DetectLabelsRequest;
 import software.amazon.awssdk.services.rekognition.model.DetectLabelsResponse;
 import software.amazon.awssdk.services.rekognition.model.Image;
 import software.amazon.awssdk.services.rekognition.model.Label;
+import no.pgr301.exam.metrics.WishifaiMetrics;
 
 import java.util.List;
 
@@ -14,17 +15,20 @@ import java.util.List;
 public class RekognitionService {
 
     private final RekognitionClient client;
+    private final WishifaiMetrics metrics;
 
-    public RekognitionService(RekognitionClient client) {
+
+    public RekognitionService(RekognitionClient client, WishifaiMetrics metrics) {
         this.client = client;
+        this.metrics = metrics;
     }
 
     public List<String> detectLabels(byte[] bytes) {
-        DetectLabelsResponse resp = client.detectLabels(DetectLabelsRequest.builder()
+        DetectLabelsResponse resp = metrics.measureRekognition(() -> client.detectLabels(DetectLabelsRequest.builder()
                 .image(Image.builder().bytes(SdkBytes.fromByteArray(bytes)).build())
                 .maxLabels(20)
                 .minConfidence(70f)
-                .build());
+                .build()));
 
         return resp.labels().stream().map(Label::name).toList();
     }
