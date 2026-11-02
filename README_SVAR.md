@@ -65,3 +65,15 @@ Grønn kjøring: https://github.com/AlexanderEkeberg/pgr301-eksamen-34/actions/r
 Terraform kjører etter build fordi den trenger den nye image-taggen, og imaget må ligge i ECR før ECS kan starte det.
 
 Valgte å låse runner, Terraform og AWS-provideren slik at pipelinen gir samme resultat hver gang.
+
+
+## Oppgave 3A – Metrikker
+
+Metrikkene ligger i WishifaiMetrics.java og sendes til CloudWatch i namespace wishifai-34.
+
+- `rekognition_duration` (Timer) måler tiden Rekognition-kallet tar.
+- `bedrock_duration` (Timer) måler tiden Bedrock-kallet tar.
+- `gift_suggestions_per_request` (DistributionSummary) er business-metrikken og viser hvor mange gaveforslag hvert bilde gir, i tillegg til totalt antall forslag og antall bilder analysert.
+- `bedrock_parse_failures` (Counter) teller hvor ofte Bedrock svarer i et format appen ikke kan lese, som sier noe om kvaliteten på LLM-svarene.
+
+Målingene viste at Bedrock tar rundt 15 sekunder mens Rekognition tar under 1 sekund, så det er Bedrock som gjør tjenesten treg.

@@ -107,6 +107,7 @@ public class BedrockService {
             String json = m.find() ? m.group() : text;
             return MAPPER.readValue(json, GiftAnalysis.class);
         } catch (Exception e) {
+            metrics.recordParseFailure();
             return new GiftAnalysis(
                     "(ukjent)",
                     "(kunne ikke parse svar)",

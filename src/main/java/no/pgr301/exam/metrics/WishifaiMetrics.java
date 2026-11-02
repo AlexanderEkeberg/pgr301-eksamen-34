@@ -3,17 +3,19 @@ package no.pgr301.exam.metrics;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.DistributionSummary;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Supplier;
+
 
 @Component
 public class WishifaiMetrics {
 
     private final Timer rekognitionTimer;
     private final Timer bedrockTimer;
-    private final Counter imagesAnalyzed;
-    private final Counter giftSuggestions;
+    private final DistributionSummary giftSuggestionsPerRequest;
+    private final Counter bedrockParseFailures;
 
     public WishifaiMetrics(MeterRegistry meterRegistry) {
         this.rekognitionTimer = Timer.builder("rekognition_duration")
@@ -24,12 +26,12 @@ public class WishifaiMetrics {
                 .description("Tid brukt på Bedrock-kallet")
                 .register(meterRegistry);
 
-        this.imagesAnalyzed = Counter.builder("images_analyzed")
-                .description("Antall bilder som er analysert")
+        this.giftSuggestionsPerRequest = DistributionSummary.builder("gift_suggestions_per_request")
+                .description("Antall gaveforslag per analysert bilde")
                 .register(meterRegistry);
 
-        this.giftSuggestions = Counter.builder("gift_suggestions")
-                .description("Antall gaveforslag som er generert")
+        this.bedrockParseFailures = Counter.builder("bedrock_parse_failures")
+                .description("Antall Bedrock-svar som ikke kunne leses som JSON")
                 .register(meterRegistry);
     }
 
@@ -42,7 +44,10 @@ public class WishifaiMetrics {
     }
 
     public void recordAnalysis(int suggestionCount) {
-        imagesAnalyzed.increment();
-        giftSuggestions.increment(suggestionCount);
+        giftSuggestionsPerRequest.record(suggestionCount);
+    }
+
+    public void recordParseFailure() {
+        bedrockParseFailures.increment();
     }
 }
