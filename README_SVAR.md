@@ -42,6 +42,8 @@ Terraform-kode: `infra/`
 
 URL: https://wi-e93f0f7ffdc34ed1b0ae62a2d151e2cf.ecs.eu-west-1.on.aws
 
+Helsesjekk: https://wi-e93f0f7ffdc34ed1b0ae62a2d151e2cf.ecs.eu-west-1.on.aws/api/health
+
 Test:
 ```bash
 curl -F "image=@samples/sample_image.png" https://wi-e93f0f7ffdc34ed1b0ae62a2d151e2cf.ecs.eu-west-1.on.aws/api/analyze
@@ -60,6 +62,8 @@ State lagres i S3 slik at pipelinen og andre utviklere bruker samme state.
 ## Oppgave 2C – Terraform i pipeline
 
 Grønn kjøring: https://github.com/AlexanderEkeberg/pgr301-eksamen-34/actions/runs/41340040292
+
+![Pipeline](media/pipeline.png)
 
 Terraform kjører etter build fordi den trenger den nye image-taggen, og imaget må ligge i ECR før ECS kan starte det.
 
@@ -94,3 +98,6 @@ Jeg har lagt med et bilde: ![Dashboard](media/dashboard.png)
 
 ### Alarm
 wishifai-34-bedrock-slow går hvis Bedrock bruker mer enn 30 sekunder i snitt i 3 minutter på rad. Bedrock tar normalt rundt 15 sekunder og er den tregeste delen av tjenesten, så 30 sekunder betyr at noe er galt. Kravet om 3 perioder gjør at ett enkelt tregt kall ikke utløser alarmen.
+
+
+## Oppgave 4 – Drøfting 
