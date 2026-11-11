@@ -32,7 +32,6 @@ ECR-repoet ble opprettet manuelt med:
 aws ecr create-repository --repository-name wishifai-34 --region eu-west-1
 ```
 
-### Tagging-strategi
 Hvert image tagges med commit-SHA-en, slik at man alltid kan se nøyaktig hvilken versjon av koden som kjører, og enkelt rulle tilbake til en tidligere versjon.
 
 
@@ -77,3 +76,21 @@ Metrikkene ligger i WishifaiMetrics.java og sendes til CloudWatch i namespace wi
 - `bedrock_parse_failures` (Counter) teller hvor ofte Bedrock svarer i et format appen ikke kan lese, som sier noe om kvaliteten på LLM-svarene.
 
 Målingene viste at Bedrock tar rundt 15 sekunder mens Rekognition tar under 1 sekund, så det er Bedrock som gjør tjenesten treg.
+
+
+## Oppgave 3B – Dashboard og alarm
+
+Dashboard: wishifai-34 i CloudWatch
+
+Her ligger Terraform-kode: infra/dashboard.tf og infra/alarm.tf
+
+Jeg har lagt med et bilde: ![Dashboard](media/dashboard.png)
+
+- Business: gift_suggestions_per_request viser hvor mange gaveforslag hvert bilde gir.
+- Infrastruktur: CPU og minne for ECS-tjenesten, for å se om containeren har nok ressurser.
+- Applikasjon: process.cpu.usage fra Spring Boot Actuator viser hvor mye CPU selve appen bruker.
+- I tillegg vises bedrock_duration og rekognition_duration side om side, slik at man ser hvor tiden går.
+
+
+### Alarm
+wishifai-34-bedrock-slow går hvis Bedrock bruker mer enn 30 sekunder i snitt i 3 minutter på rad. Bedrock tar normalt rundt 15 sekunder og er den tregeste delen av tjenesten, så 30 sekunder betyr at noe er galt. Kravet om 3 perioder gjør at ett enkelt tregt kall ikke utløser alarmen.
