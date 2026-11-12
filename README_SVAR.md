@@ -88,7 +88,7 @@ Dashboard: wishifai-34 i CloudWatch
 
 Her ligger Terraform-kode: infra/dashboard.tf og infra/alarm.tf
 
-Jeg har lagt med et bilde: ![Dashboard](media/dashboard.png)
+![Dashboard](media/dashboard.png)
 
 - Business: gift_suggestions_per_request viser hvor mange gaveforslag hvert bilde gir.
 - Infrastruktur: CPU og minne for ECS-tjenesten, for å se om containeren har nok ressurser.
@@ -101,3 +101,26 @@ wishifai-34-bedrock-slow går hvis Bedrock bruker mer enn 30 sekunder i snitt i 
 
 
 ## Oppgave 4 – Drøfting 
+
+Testing er noe som vil bli vanskeligere siden GenAi modeller ofte ikke gir samme svar hver gang. Da kan vi ikke teste med vanlige tester som sjekker 
+ett bestemt svar. jeg sjekket dette ved å sende inn samme bilde sample_image 3 ganger fikk jeg fem forslag innen interiør hver gang og noen merker
+gikk igjen, men ingen av svarene var like. jeg tenker da i stedet for å teste nøyaktige svar må man derfor teste rundt svaret, med strenge regler 
+for hva som er lov. For Wishifai kan det være at svaret alltid er gyldig JSON, har maks fem forslag, passer til typen rom og ikke inneholder gaver 
+fra en forbudt-liste, for eksempel kniver for et barnerom. Disse reglene kan kjøres i pipelinen før deploy men ulempe er at de bare fanger feil man 
+har tenkt på på forhånd, så de reduserer risikoen, men fjerner den ikke.
+
+Med GenAI er det ikke bare koden som deployes men også prompten og modellen. I Wishifai ligger prompten i BedrockService.java, så den er versjonert 
+i Git, følger commit-SHA-en og er lett å spore og rulle tilbake. Modellen kommer derimot fra en ekstern leverandør. Wishifai bruker en låst versjon, 
+claude-sonnet-4-5-20250929, men leverandøren kan fase den ut, og jeg har aldri full innsikt i hvordan den oppfører seg. Hvis man bytter modell via 
+BEDROCK_MODEL_ID kan det i tillegg endre alle svarene uten at pipelinen merker noe. jeg mener at hvis man ønsker full kontroll får man det bare ved 
+å kjøre modellen lokalt, men det krever egen drift og gir ofte dårligere svar fordi open source modeller ofte ikke er like gode.
+
+Dette med overvåking er enda viktigere når det gjelder GenAI. Overvåkingen jeg la til i oppgave 3 viser at tjenesten kjører, men ikke om svarene er 
+gode. Alarmen går bare av hvis Bedrock bruker over 30 sekunder, men et upassende gaveforslag til et barn ville gitt normal svartid og ingen alarm. 
+Metrikken bedrock_parse_failures sier noe om kvaliteten, men bare om formatet på svaret, ikke om innholdet. Det jeg tenker er viktigst i produksjon, 
+er en enkel måte for brukere å rapportere dårlige svar på, kanskje stikkprøver av svarene og en måte å følge med på tokenforbruket. hvis svarlengden 
+eller kostnadene øker mye, kan det være et tegn på at modellen oppfører seg annerledes men, det er ikke en garanti dette heller da. 
+
+For Wishifai er det greit å deploye automatisk og rette feil etter hvert som de oppdages i produksjon, fordi et dårlig gaveforslag ikke er så 
+farlig. Men hvis vi ser på en bank eller et sykehus, er en feil mye mer alvorlig. Der tenker jeg at et menneske bør godkjenne endringer før de går i 
+produksjon, og at AI-en bare bør foreslå. Jeg tenker at jo større konsekvenser en feil kan ha, desto strengere bør man være med å automatisere ting.
