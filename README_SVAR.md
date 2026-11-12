@@ -103,7 +103,7 @@ wishifai-34-bedrock-slow går hvis Bedrock bruker mer enn 30 sekunder i snitt i 
 ## Oppgave 4 – Drøfting 
 
 Testing er noe som vil bli vanskeligere siden GenAi modeller ofte ikke gir samme svar hver gang. Da kan vi ikke teste med vanlige tester som sjekker 
-ett bestemt svar. jeg sjekket dette ved å sende inn samme bilde sample_image 3 ganger fikk jeg fem forslag innen interiør hver gang og noen merker
+ett bestemt svar. jeg sjekket dette ved å sende inn samme bilde sample_image tre ganger fikk jeg fem forslag innen interiør hver gang og noen merker
 gikk igjen, men ingen av svarene var like. jeg tenker da i stedet for å teste nøyaktige svar må man derfor teste rundt svaret, med strenge regler 
 for hva som er lov. For Wishifai kan det være at svaret alltid er gyldig JSON, har maks fem forslag, passer til typen rom og ikke inneholder gaver 
 fra en forbudt-liste, for eksempel kniver for et barnerom. Disse reglene kan kjøres i pipelinen før deploy men ulempe er at de bare fanger feil man 
